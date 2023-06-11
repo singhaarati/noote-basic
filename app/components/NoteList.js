@@ -1,12 +1,17 @@
+import { useContext } from "react"
+import notesContext from "./NotesContext"
 
 export default function NoteList() {
+    const { notes, filter } = useContext(notesContext)
+    //const { filter } = useContext(notesContext)
     return (
         <div>
             <ul>
                 {
-                    notes.map(note => (
-                        <li key={note.id}>{note.desc}</li>
-                    ))
+                    notes.filter(note => note.desc.toLowerCase().includes(filter.toLowerCase()))
+                        .map(note => (
+                            <li key={note.id}>{note.desc}</li>
+                        ))
                 }
             </ul>
         </div>

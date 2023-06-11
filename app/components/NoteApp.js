@@ -3,11 +3,13 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import AddNote from './AddNote'
 import NoteList from './NoteList'
+import notesContext from './NotesContext'
+import NotesFilter from './NotesFilter'
 
 export default function NoteApp() {
     const [notes, setNotes] = useState([])
-    const [desc, setDesc] = useState([])
-    const [filter, setFilter] = useState([])
+    const [desc, setDesc] = useState("")
+    const [filter, setFilter] = useState("")
     useEffect(() => {
         axios.get('http://localhost:3000/notes.json')
             .then(res => {
@@ -16,7 +18,7 @@ export default function NoteApp() {
             })
     }, [])
 
-    const handleAdd = () => {
+    const handleAdd = (evt) => {
         evt.preventDefault()
         const newNote = {
             id: notes.length + 1,
@@ -28,23 +30,25 @@ export default function NoteApp() {
 
     return (
         <div>
-            <imput type='text'
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-            />
+            <notesContext.Provider value=
+                {{
+                    notes,
+                    handleAdd,
+                    desc,
+                    setDesc,
+                    filter,
+                    setFilter
+                }}>
 
-            <NoteList
-                notes={notes}
-            />
-            <br />
-            <AddNote
-                handleAdd={handleAdd}
-                desc={desc}
-                setDesc={setDesc}
-            />
+                {/* <NotesFilter /> */}
+
+                <NotesFilter />
+                <NoteList />
+                <br />
+                <AddNote />
 
 
-
+            </notesContext.Provider>
         </div>
     )
 }
