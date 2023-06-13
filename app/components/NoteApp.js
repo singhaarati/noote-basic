@@ -1,43 +1,58 @@
 'use client'
-import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useEffect, useReducer } from 'react'
+import notesContext from '../services/NotesContext'
+import noteReducer from '../services/noteReducer'
+import noteService from '../services/noteService'
 import AddNote from './AddNote'
 import NoteList from './NoteList'
-import notesContext from './NotesContext'
 import NotesFilter from './NotesFilter'
 
 export default function NoteApp() {
-    const [notes, setNotes] = useState([])
-    const [desc, setDesc] = useState("")
-    const [filter, setFilter] = useState("")
+
+    const [state, dispatch] = useReducer(noteReducer, {
+        notes: [],
+        desc: "",
+        filter: ""
+    })
+
+    //state is mange through useReducer so it is not required
+
+    // const [notes, setNotes] = useState([])
+    // const [desc, setDesc] = useState("")
+    // const [filter, setFilter] = useState("")
+
     useEffect(() => {
-        axios.get('http://localhost:3000/notes.json')
-            .then(res => {
-                console.log(res.data.notes)
-                setNotes(res.data.notes)
-            })
+
+        noteService.getAllNotes()
+            .then(data => dispatch({
+                type: 'SET_NOTES',
+                payload: data
+            }))
+
+        // .then(data => setNotes(data))
+
+        // axios.get('http://localhost:3000/notes.json')
+        //     .then(res => {
+        //         console.log(res.data.notes)
+        //         setNotes(res.data.notes)
+        //     })
     }, [])
 
-    const handleAdd = (evt) => {
-        evt.preventDefault()
-        const newNote = {
-            id: notes.length + 1,
-            desc: desc,
-            important: Math.random() < 0.5
-        }
-        setNotes(notes.concat(newNote))
-    }
+    
 
     return (
         <div>
             <notesContext.Provider value=
                 {{
-                    notes,
-                    handleAdd,
-                    desc,
-                    setDesc,
-                    filter,
-                    setFilter
+                    state,
+                    dispatch
+
+                    // notes,
+                    // handleAdd,
+                    // desc,
+                    // setDesc,
+                    // filter,
+                    // setFilter
                 }}>
 
                 {/* <NotesFilter /> */}
